@@ -1,0 +1,154 @@
+/* ================= GLOBAL VARIABLES ================= */
+:root{
+  --brand:#198754;             /* professional green */
+  --sidebar-bg:#ffffff;
+  --sidebar-border:#e5e7eb;
+  --text:#1f2937;
+  --muted:#6b7280;
+  --navbar-height:56px;
+  --sidebar-width:240px;
+}
+
+/* ================= BODY ================= */
+body{
+  font-family:Inter, system-ui, -apple-system, 'Segoe UI', Roboto, Arial;
+  background:#f9fafb;
+  color:var(--text);
+  margin:0;
+}
+
+/* ================= HEADER / NAVBAR ================= */
+header{
+  height:var(--navbar-height);
+  background:var(--brand);
+  color:#fff;
+  position:fixed;
+  top:0;
+  left:0;
+  right:0;
+  z-index:50;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:0 24px;
+  font-weight:600;
+  letter-spacing:.2px;
+}
+
+header img{
+  border-radius:50%;
+}
+
+/* ================= SIDEBAR ================= */
+#sidebar{
+  /* Sidebar participates in normal document flow so it scrolls with the page */
+  position:relative;
+  top:0;
+  left:0;
+  width:var(--sidebar-width);
+  background:var(--sidebar-bg);
+  border-right:1px solid var(--sidebar-border);
+  overflow:auto;
+  padding-top:1rem;
+}
+
+
+#sidebar nav a{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  padding:10px 12px;
+  margin-bottom:4px;
+  border-radius:6px;
+  font-size:14px;
+  color:var(--muted);
+  text-decoration:none;
+  transition:.15s;
+}
+
+#sidebar nav a:hover{
+  background:#f0fdf4;
+  color:var(--brand);
+}
+
+#sidebar nav a.active{
+  background:var(--brand);
+  color:#fff;
+}
+
+#sidebar nav a i{
+  width:18px;
+  text-align:center;
+}
+
+/* ================= MAIN CONTENT ================= */
+main{
+  /* layout uses a flex container; no fixed-offset margin needed */
+  margin-left:0;
+  padding:24px;
+  padding-top:calc(var(--navbar-height) + 16px);
+  min-height:100vh;
+}
+
+/* ================= STAT CARDS ================= */
+.stat-card{
+  background:#fff;
+  border:1px solid #e5e7eb;
+  border-radius:8px;
+  padding:20px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+}
+
+.stat-label{
+  font-size:13px;
+  color:var(--muted);
+}
+
+.stat-value{
+  font-size:28px;
+  font-weight:600;
+  margin-top:4px;
+}
+
+.stat-icon{
+  font-size:24px;
+  color:#9ca3af;
+}
+
+/* ================= ACTION BUTTONS ================= */
+.action-btn{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:8px;
+  padding:10px;
+  border:1px solid #e5e7eb;
+  border-radius:6px;
+  font-size:14px;
+  color:#374151;
+  background:#fff;
+  transition:.15s;
+  text-decoration:none;
+}
+
+.action-btn:hover{
+  background:#f9fafb;
+}
+
+.action-btn.primary{
+  background:var(--brand);
+  color:#fff;
+  border-color:var(--brand);
+}
+
+/* ================= MOBILE ================= */
+@media (max-width: 1024px){
+  #sidebar{
+    display:none;
+  }
+  main{
+    margin-left:0;
+  }
+}

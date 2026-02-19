@@ -258,7 +258,7 @@
   let topJobsChart = null;
 
   async function fetchAnalytics(year, pieYear, pieMonth, topYear, topMonth, barMonth){
-    const url = `../../backend/analytics.php?year=${encodeURIComponent(year)}&pie_year=${encodeURIComponent(pieYear)}&pie_month=${encodeURIComponent(pieMonth)}&top_year=${encodeURIComponent(topYear)}&top_month=${encodeURIComponent(topMonth)}&bar_month=${encodeURIComponent(barMonth)}&debug=1`;
+    const url = `/backend/analytics.php?year=${encodeURIComponent(year)}&pie_year=${encodeURIComponent(pieYear)}&pie_month=${encodeURIComponent(pieMonth)}&top_year=${encodeURIComponent(topYear)}&top_month=${encodeURIComponent(topMonth)}&bar_month=${encodeURIComponent(barMonth)}&debug=1`;
     const resp = await fetch(url, { credentials: 'same-origin' });
     const text = await resp.text();
     try {

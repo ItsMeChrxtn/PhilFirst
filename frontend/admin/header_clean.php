@@ -1,11 +1,29 @@
 <?php
 session_start();
 if(!isset($_SESSION['user']) || ($_SESSION['user']['role'] ?? '') !== 'admin'){
-  header('Location: ../index.php');
+  header('Location: /welcome/home');
   exit;
 }
 // determine current file to mark active sidebar link
-$currentFile = basename($_SERVER['PHP_SELF']);
+$currentRoute = trim((string)($_GET['route'] ?? ''), '/');
+$routeToCurrentFile = [
+  'welcome/admin/dashboard' => 'dashboard.php',
+  'welcome/admin/job-management' => 'job_management.php',
+  'welcome/admin/applicants' => 'applicants.php',
+  'welcome/admin/schedule' => 'schedule.php',
+  'welcome/admin/users' => 'users.php',
+  'welcome/admin/cms' => 'cms.php',
+  'welcome/admin/settings' => 'settings.php',
+];
+$currentFile = $routeToCurrentFile[$currentRoute] ?? basename($_SERVER['PHP_SELF']);
+
+$adminDashboardUrl = '/welcome/admin/dashboard';
+$adminJobManagementUrl = '/welcome/admin/job-management';
+$adminApplicantsUrl = '/welcome/admin/applicants';
+$adminScheduleUrl = '/welcome/admin/schedule';
+$adminUsersUrl = '/welcome/admin/users';
+$adminCmsUrl = '/welcome/admin/cms';
+$adminSettingsUrl = '/welcome/admin/settings';
 $admin = $_SESSION['user'] ?? [];
 $adminFirst = $admin['first_name'] ?? '';
 $adminLast = $admin['last_name'] ?? '';
@@ -54,7 +72,7 @@ $adminAvatarUrl = $adminAvatar ?: ('https://ui-avatars.com/api/?name=' . urlenco
 <!-- ================= NAVBAR (styled like frontend header) ================= -->
 <header class="bg-white border-b sticky top-0 z-50 shadow-sm">
   <div class="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
-    <a href="dashboard.php" class="flex items-center gap-3">
+    <a href="<?php echo htmlspecialchars($adminDashboardUrl); ?>" class="flex items-center gap-3">
       <div class="w-10 h-10 rounded-lg bg-emerald-600 flex items-center justify-center text-white font-bold">PF</div>
       <div class="hidden sm:block">
         <h1 class="text-lg font-extrabold tracking-wide text-emerald-700">PhilFirst Admin</h1>
@@ -97,8 +115,8 @@ $adminAvatarUrl = $adminAvatar ?: ('https://ui-avatars.com/api/?name=' . urlenco
             </div>
           </div>
           <div class="flex flex-col">
-            <a href="settings.php" class="px-4 py-3 hover:bg-emerald-50 text-sm">⚙️ Settings</a>
-            <a href="../backend/logout.php" class="text-left px-4 py-3 text-sm text-red-600 hover:bg-red-50">🚪 Logout</a>
+            <a href="<?php echo htmlspecialchars($adminSettingsUrl); ?>" class="px-4 py-3 hover:bg-emerald-50 text-sm">⚙️ Settings</a>
+            <a href="/backend/logout.php" class="text-left px-4 py-3 text-sm text-red-600 hover:bg-red-50">🚪 Logout</a>
           </div>
         </div>
       </div>
@@ -109,16 +127,16 @@ $adminAvatarUrl = $adminAvatar ?: ('https://ui-avatars.com/api/?name=' . urlenco
 <div class="flex">
   <aside id="sidebar" class="w-64 bg-white border-r min-h-screen fixed top-20 left-0 bottom-0 overflow-auto">
     <nav class="px-4 py-6 text-sm space-y-1">
-      <a href="dashboard.php" class="<?= ($currentFile==='dashboard.php') ? 'sidebar-link active' : 'sidebar-link' ?>"><i class="fa-solid fa-chart-pie"></i> Dashboard</a>
-      <a href="job_management.php" class="<?= ($currentFile==='job_management.php') ? 'sidebar-link active' : 'sidebar-link' ?>"><i class="fa-solid fa-briefcase"></i> Job Management</a>
-      <a href="applicants.php" class="<?= ($currentFile==='applicants.php') ? 'sidebar-link active' : 'sidebar-link' ?>"><i class="fa-solid fa-users"></i> Applicants
+      <a href="<?php echo htmlspecialchars($adminDashboardUrl); ?>" class="<?= ($currentFile==='dashboard.php') ? 'sidebar-link active' : 'sidebar-link' ?>"><i class="fa-solid fa-chart-pie"></i> Dashboard</a>
+      <a href="<?php echo htmlspecialchars($adminJobManagementUrl); ?>" class="<?= ($currentFile==='job_management.php') ? 'sidebar-link active' : 'sidebar-link' ?>"><i class="fa-solid fa-briefcase"></i> Job Management</a>
+      <a href="<?php echo htmlspecialchars($adminApplicantsUrl); ?>" class="<?= ($currentFile==='applicants.php') ? 'sidebar-link active' : 'sidebar-link' ?>"><i class="fa-solid fa-users"></i> Applicants
         <span id="applicantsBadge" class="ml-auto inline-flex items-center justify-center text-[10px] font-semibold bg-red-600 text-white rounded-full px-2 py-0.5 hidden">0</span>
       </a>
-      <a href="schedule.php" class="<?= ($currentFile==='schedule.php') ? 'sidebar-link active' : 'sidebar-link' ?>"><i class="fa-solid fa-calendar-days"></i> Calendar Schedule
+      <a href="<?php echo htmlspecialchars($adminScheduleUrl); ?>" class="<?= ($currentFile==='schedule.php') ? 'sidebar-link active' : 'sidebar-link' ?>"><i class="fa-solid fa-calendar-days"></i> Calendar Schedule
         <span id="scheduleBadge" class="ml-auto inline-flex items-center justify-center text-[10px] font-semibold bg-amber-500 text-white rounded-full px-2 py-0.5 hidden">0</span>
       </a>
-      <a href="users.php" class="<?= ($currentFile==='users.php') ? 'sidebar-link active' : 'sidebar-link' ?>"><i class="fa-solid fa-user-shield"></i> Users</a>
-      <a href="cms.php" class="<?= ($currentFile==='cms.php') ? 'sidebar-link active' : 'sidebar-link' ?>"><i class="fa-solid fa-file-lines"></i> Content Manager</a>
+      <a href="<?php echo htmlspecialchars($adminUsersUrl); ?>" class="<?= ($currentFile==='users.php') ? 'sidebar-link active' : 'sidebar-link' ?>"><i class="fa-solid fa-user-shield"></i> Users</a>
+      <a href="<?php echo htmlspecialchars($adminCmsUrl); ?>" class="<?= ($currentFile==='cms.php') ? 'sidebar-link active' : 'sidebar-link' ?>"><i class="fa-solid fa-file-lines"></i> Content Manager</a>
     </nav>
   </aside>
 
@@ -214,7 +232,7 @@ $adminAvatarUrl = $adminAvatar ?: ('https://ui-avatars.com/api/?name=' . urlenco
                   const d = new Date(app.applied_at);
                   if(!isNaN(d)) appliedText = d.toLocaleDateString('en-US', {month:'short', day:'numeric', year:'numeric'});
                 }
-                html += '<div class="px-4 py-3 border-b hover:bg-gray-50 cursor-pointer transition" onclick="window.location.href=\'applicants.php\';">';
+                html += '<div class="px-4 py-3 border-b hover:bg-gray-50 cursor-pointer transition" onclick="window.location.href=\'/welcome/admin/applicants\';">';
                 html += '<div class="text-sm font-medium text-neutral-800">' + (app.full_name || 'Unknown') + '</div>';
                 html += '<div class="text-xs text-neutral-500 mt-1">' + (app.job_title || 'Position') + ' • ' + appliedText + '</div>';
                 html += '</div>';
@@ -228,7 +246,7 @@ $adminAvatarUrl = $adminAvatar ?: ('https://ui-avatars.com/api/?name=' . urlenco
               html += '<div class="px-4 py-2 bg-amber-50 text-xs font-semibold text-amber-700">Today\'s Interviews (' + data.today_list.length + ')</div>';
               data.today_list.forEach(sched => {
                 const time = new Date(sched.scheduled_at).toLocaleTimeString('en-US', {hour:'2-digit', minute:'2-digit'});
-                html += '<div class="px-4 py-3 border-b hover:bg-gray-50 cursor-pointer transition" onclick="window.location.href=\'schedule.php\';">';
+                html += '<div class="px-4 py-3 border-b hover:bg-gray-50 cursor-pointer transition" onclick="window.location.href=\'/welcome/admin/schedule\';">';
                 html += '<div class="text-sm font-medium text-neutral-800">' + time + ' • ' + (sched.applicant_name || 'Unknown') + '</div>';
                 html += '<div class="text-xs text-neutral-500 mt-1">' + (sched.position || 'Position') + '</div>';
                 html += '</div>';

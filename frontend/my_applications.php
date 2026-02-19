@@ -53,7 +53,7 @@
   </style>
 </head>
 <body class="bg-gradient-to-br from-slate-50 via-white to-emerald-50 text-neutral-800 antialiased">
-<?php if (empty($_SESSION['user'])){ header('Location: jobs.php'); exit; } ?>
+<?php if (empty($_SESSION['user'])){ header('Location: /welcome/jobs'); exit; } ?>
 
 <!-- Shared header -->
 <?php include __DIR__ . '/partials/header.php'; ?>
@@ -65,7 +65,7 @@
     <h1 class="text-4xl sm:text-5xl font-extrabold">My Applications</h1>
     <p class="mt-3 text-lg max-w-2xl text-emerald-50/90">Track the status of jobs you applied to and manage your applications with ease.</p>
     <div class="mt-6">
-      <a href="jobs.php" class="inline-block btn-primary px-5 py-3 rounded-lg">Browse Jobs</a>
+      <a href="/welcome/jobs" class="inline-block btn-primary px-5 py-3 rounded-lg">Browse Jobs</a>
     </div>
   </div>
 </section>
@@ -102,7 +102,7 @@
         <h3 class="text-sm font-semibold text-neutral-700">Quick actions</h3>
         <div class="mt-3 flex flex-col gap-2">
           <button id="refreshBtn" class="w-full text-left px-4 py-2 rounded-lg border bg-emerald-50 text-emerald-700">Refresh</button>
-          <a href="jobs.php" class="w-full text-center px-4 py-2 rounded-lg border bg-white text-neutral-700">Browse more jobs</a>
+          <a href="/welcome/jobs" class="w-full text-center px-4 py-2 rounded-lg border bg-white text-neutral-700">Browse more jobs</a>
         </div>
       </div>
     </aside>
@@ -170,7 +170,7 @@ async function loadMyApplications(){
     if(!j.success){
       if(j.requires_login){
         await Swal.fire({icon:'info', title:'Please sign in', text:'Sign in to view your applications'});
-        window.location.href = 'jobs.php';
+        window.location.href = '/welcome/jobs';
         return;
       }
       list.innerHTML = `<div class="bg-white rounded-2xl shadow p-6 text-center text-red-600">${j.message||'Unable to load applications'}</div>`;
@@ -361,9 +361,9 @@ document.addEventListener('DOMContentLoaded', ()=>{
   const dd = document.getElementById('userDropdown');
   if(btn && dd) btn.addEventListener('click', ()=> dd.classList.toggle('hidden'));
   const logout = document.getElementById('logoutBtn');
-  if(logout) logout.addEventListener('click', async ()=>{ Swal.fire({ title:'Logging out...', icon:'info', allowOutsideClick: false, allowEscapeKey: false, didOpen: ()=>{ Swal.showLoading(); } }); try{ await fetch('../backend/logout.php',{method:'POST',credentials:'same-origin', headers:{'X-Requested-With':'XMLHttpRequest'}}); await Swal.fire({icon:'success', title:'Logged out', timer: 800, timerProgressBar: true, showConfirmButton:false}); window.location.href='index.php'; }catch(e){ Swal.fire({ title:'Error', text:'Logout failed', icon:'error', timer: 1500, timerProgressBar: true, showConfirmButton: false }); } });
+  if(logout) logout.addEventListener('click', async ()=>{ Swal.fire({ title:'Logging out...', icon:'info', allowOutsideClick: false, allowEscapeKey: false, didOpen: ()=>{ Swal.showLoading(); } }); try{ await fetch('../backend/logout.php',{method:'POST',credentials:'same-origin', headers:{'X-Requested-With':'XMLHttpRequest'}}); await Swal.fire({icon:'success', title:'Logged out', timer: 800, timerProgressBar: true, showConfirmButton:false}); window.location.href='/welcome/home'; }catch(e){ Swal.fire({ title:'Error', text:'Logout failed', icon:'error', timer: 1500, timerProgressBar: true, showConfirmButton: false }); } });
   const logoutMobile = document.getElementById('logoutBtnMobile');
-  if(logoutMobile) logoutMobile.addEventListener('click', async ()=>{ Swal.fire({ title:'Logging out...', icon:'info', allowOutsideClick: false, allowEscapeKey: false, didOpen: ()=>{ Swal.showLoading(); } }); try{ await fetch('../backend/logout.php',{method:'POST',credentials:'same-origin', headers:{'X-Requested-With':'XMLHttpRequest'}}); await Swal.fire({icon:'success', title:'Logged out', timer: 800, timerProgressBar: true, showConfirmButton:false}); window.location.href='index.php'; }catch(e){ Swal.fire({ title:'Error', text:'Logout failed', icon:'error', timer: 1500, timerProgressBar: true, showConfirmButton: false }); } });
+  if(logoutMobile) logoutMobile.addEventListener('click', async ()=>{ Swal.fire({ title:'Logging out...', icon:'info', allowOutsideClick: false, allowEscapeKey: false, didOpen: ()=>{ Swal.showLoading(); } }); try{ await fetch('../backend/logout.php',{method:'POST',credentials:'same-origin', headers:{'X-Requested-With':'XMLHttpRequest'}}); await Swal.fire({icon:'success', title:'Logged out', timer: 800, timerProgressBar: true, showConfirmButton:false}); window.location.href='/welcome/home'; }catch(e){ Swal.fire({ title:'Error', text:'Logout failed', icon:'error', timer: 1500, timerProgressBar: true, showConfirmButton: false }); } });
   const refresh = document.getElementById('refreshBtn');
   if(refresh) refresh.addEventListener('click', ()=> loadMyApplications());
 });

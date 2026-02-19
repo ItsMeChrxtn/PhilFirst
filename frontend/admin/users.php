@@ -75,7 +75,7 @@
 // Load users from backend and render into the table body
 async function loadUsers(){
   try{
-    const res = await fetch('../../backend/get_users.php', { credentials: 'same-origin' });
+    const res = await fetch('/backend/get_users.php', { credentials: 'same-origin' });
     const j = await res.json().catch(()=>null);
     if(!j || !j.success){ console.error('Failed to load users', j); return; }
     const rows = j.data || [];
@@ -136,7 +136,7 @@ document.addEventListener('DOMContentLoaded', loadUsers);
 <script>
 async function viewUser(id){
   try{
-    const res = await fetch('../../backend/get_user.php?id='+encodeURIComponent(id), { credentials:'same-origin' });
+    const res = await fetch('/backend/get_user.php?id='+encodeURIComponent(id), { credentials:'same-origin' });
     const j = await res.json().catch(()=>null);
     if(!j || !j.success) return Swal.fire('Error','Unable to load user','error');
     const u = j.data;
@@ -163,7 +163,7 @@ async function changeRole(id, role){
   try{
     const ok = await Swal.fire({ title: 'Change role?', text: `Set role to "${role}"?`, showCancelButton:true, confirmButtonText:'Yes' });
     if(!ok.isConfirmed) return;
-    const res = await fetch('../../backend/update_user_role.php', { method:'POST', credentials:'same-origin', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ user_id:id, role: role }) });
+    const res = await fetch('/backend/update_user_role.php', { method:'POST', credentials:'same-origin', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ user_id:id, role: role }) });
     const j = await res.json().catch(()=>null);
     if(!j || !j.success) return Swal.fire('Error', j && j.message ? j.message : 'Failed', 'error');
     Swal.fire('Updated','Role updated','success');
@@ -175,7 +175,7 @@ async function deleteUser(id){
   try{
     const ok = await Swal.fire({ title:'Delete user?', text:'This action cannot be undone.', showCancelButton:true, confirmButtonText:'Delete' });
     if(!ok.isConfirmed) return;
-    const res = await fetch('../../backend/delete_user.php', { method:'POST', credentials:'same-origin', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ user_id:id }) });
+    const res = await fetch('/backend/delete_user.php', { method:'POST', credentials:'same-origin', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ user_id:id }) });
     const j = await res.json().catch(()=>null);
     if(!j || !j.success) return Swal.fire('Error', j && j.message ? j.message : 'Failed', 'error');
     Swal.fire('Deleted','User removed','success');

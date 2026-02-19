@@ -145,7 +145,7 @@ async function loadAnalytics() {
   try {
     const year = document.getElementById('yearFilter').value;
     const month = document.getElementById('monthFilter').value;
-    const response = await fetch(`../../backend/analytics.php?year=${year}&pie_year=${year}&pie_month=${month}&top_year=${year}&top=15`);
+    const response = await fetch(`/backend/analytics.php?year=${year}&pie_year=${year}&pie_month=${month}&top_year=${year}&top=15`);
     if (!response.ok) throw new Error('Failed to load analytics');
     analyticsData = await response.json();
     

@@ -479,9 +479,9 @@ document.addEventListener('DOMContentLoaded', ()=>{
   const userDropdownM = document.getElementById('userMobileDropdown');
   if(userBtnM && userDropdownM) userBtnM.addEventListener('click', ()=> userDropdownM.classList.toggle('hidden'));
   const logoutBtn = document.getElementById('logoutBtn');
-  if(logoutBtn) logoutBtn.addEventListener('click', async ()=>{ Swal.fire({ title:'Logging out...', icon:'info', allowOutsideClick: false, allowEscapeKey: false, didOpen: ()=>{ Swal.showLoading(); } }); try{ await fetch('../backend/logout.php',{method:'POST',credentials:'same-origin', headers: {'X-Requested-With':'XMLHttpRequest'}}); await Swal.fire({ icon:'success', title:'Logged out', text:'You have been logged out', timer: 800, timerProgressBar: true, showConfirmButton:false }); window.location.href='index.php'; }catch(e){ Swal.fire({ title:'Error', text:'Logout failed', icon:'error', timer: 1500, timerProgressBar: true, showConfirmButton: false }); } });
+  if(logoutBtn) logoutBtn.addEventListener('click', async ()=>{ Swal.fire({ title:'Logging out...', icon:'info', allowOutsideClick: false, allowEscapeKey: false, didOpen: ()=>{ Swal.showLoading(); } }); try{ await fetch('../backend/logout.php',{method:'POST',credentials:'same-origin', headers: {'X-Requested-With':'XMLHttpRequest'}}); await Swal.fire({ icon:'success', title:'Logged out', text:'You have been logged out', timer: 800, timerProgressBar: true, showConfirmButton:false }); window.location.href='/welcome/home'; }catch(e){ Swal.fire({ title:'Error', text:'Logout failed', icon:'error', timer: 1500, timerProgressBar: true, showConfirmButton: false }); } });
   const logoutBtnM = document.getElementById('logoutBtnMobile');
-  if(logoutBtnM) logoutBtnM.addEventListener('click', async ()=>{ Swal.fire({ title:'Logging out...', icon:'info', allowOutsideClick: false, allowEscapeKey: false, didOpen: ()=>{ Swal.showLoading(); } }); try{ await fetch('../backend/logout.php',{method:'POST',credentials:'same-origin', headers: {'X-Requested-With':'XMLHttpRequest'}}); await Swal.fire({ icon:'success', title:'Logged out', text:'You have been logged out', timer: 800, timerProgressBar: true, showConfirmButton:false }); window.location.href='index.php'; }catch(e){ Swal.fire({ title:'Error', text:'Logout failed', icon:'error', timer: 1500, timerProgressBar: true, showConfirmButton: false }); } });
+  if(logoutBtnM) logoutBtnM.addEventListener('click', async ()=>{ Swal.fire({ title:'Logging out...', icon:'info', allowOutsideClick: false, allowEscapeKey: false, didOpen: ()=>{ Swal.showLoading(); } }); try{ await fetch('../backend/logout.php',{method:'POST',credentials:'same-origin', headers: {'X-Requested-With':'XMLHttpRequest'}}); await Swal.fire({ icon:'success', title:'Logged out', text:'You have been logged out', timer: 800, timerProgressBar: true, showConfirmButton:false }); window.location.href='/welcome/home'; }catch(e){ Swal.fire({ title:'Error', text:'Logout failed', icon:'error', timer: 1500, timerProgressBar: true, showConfirmButton: false }); } });
   const lf = document.getElementById('loginForm');
   if(lf) lf.addEventListener('submit', async (e)=>{
     e.preventDefault();
@@ -494,7 +494,7 @@ document.addEventListener('DOMContentLoaded', ()=>{
       if(j.success){
         closeLogin();
         await Swal.fire({ icon: 'success', title: 'Login successful', text: 'You are now logged in', timer: 1400, timerProgressBar: true, showConfirmButton: false });
-        if(j.role === 'admin'){ window.location.href = 'admin/index.php'; } else { window.location.href = 'jobs.php'; }
+        if(j.role === 'admin'){ window.location.href = '/welcome/admin/dashboard'; } else { window.location.href = '/welcome/jobs'; }
       } else {
         Swal.fire({ icon: 'error', title: 'Login failed', text: j.message || 'Invalid credentials', timer: 2000, timerProgressBar: true, showConfirmButton: false });
       }
@@ -543,7 +543,7 @@ document.addEventListener('DOMContentLoaded', ()=>{
       if(j.success){
         closeRegister();
         await Swal.fire({ icon: 'success', title: 'Account created', text: 'Your account was created successfully', timer: 1500, timerProgressBar: true, showConfirmButton: false });
-        window.location.href = 'jobs.php';
+        window.location.href = '/welcome/jobs';
       } else {
         Swal.fire({ icon: 'error', title: 'Registration failed', text: j.message || 'Unable to register', timer: 2000, timerProgressBar: true, showConfirmButton: false });
       }

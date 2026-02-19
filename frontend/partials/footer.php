@@ -133,7 +133,7 @@ if(!window._notificationsInlineProvided){
                 });
               }catch(e){ /* ignore */ }
               // navigate to application details if available
-              const target = el.getAttribute('data-application-id') ? ('my_applications.php?application_id=' + encodeURIComponent(el.getAttribute('data-application-id'))) : '#';
+              const target = el.getAttribute('data-application-id') ? ('/welcome/my-applications?application_id=' + encodeURIComponent(el.getAttribute('data-application-id'))) : '#';
               if(target) window.location.href = target;
             });
           });
@@ -165,7 +165,7 @@ if(!window._notificationsInlineProvided){
           const title = (a.resolved_job_title || a.message || ('Application ' + (a.application_id || a.id || '')));
           const when = a.created_at || '';
           const body = a.message || '';
-          const link = a.application_id ? ('my_applications.php?application_id='+encodeURIComponent(a.application_id)) : (a.id ? ('my_applications.php?application_id='+encodeURIComponent(a.id)) : '#');
+          const link = a.application_id ? ('/welcome/my-applications?application_id='+encodeURIComponent(a.application_id)) : (a.id ? ('/welcome/my-applications?application_id='+encodeURIComponent(a.id)) : '#');
           const aEl = document.createElement('a');
           aEl.className = 'block p-4 border-b hover:bg-neutral-50 ' + (isRead ? '' : 'bg-emerald-50');
           aEl.href = link;

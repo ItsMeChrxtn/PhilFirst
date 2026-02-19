@@ -455,7 +455,7 @@
 
 <!-- ================= SCRIPT ================= -->
 <script>
-  const apiUrl = '../../backend/job_api.php';
+  const apiUrl = '/backend/job_api.php';
   let jobsData = [];
   let currentPage = 1;
   const pageSize = 15;

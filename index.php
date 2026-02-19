@@ -1,4 +1,52 @@
 <?php
+// Public-facing frontend entry route (can be overridden via environment variable)
+$publicFrontendEntryUrl = getenv('PHILFIRST_PUBLIC_FRONTEND_URL') ?: '/welcome/home';
+
+// Lightweight route bridge so clean routes can be served by index.php
+$frontendRouteMap = [
+  'welcome/home' => __DIR__ . '/frontend/index.php',
+  'welcome/jobs' => __DIR__ . '/frontend/jobs.php',
+  'welcome/my-applications' => __DIR__ . '/frontend/my_applications.php',
+  'welcome/settings' => __DIR__ . '/frontend/settings.php',
+
+  // Admin clean routes
+  'welcome/admin/dashboard' => __DIR__ . '/frontend/admin/dashboard.php',
+  'welcome/admin/job-management' => __DIR__ . '/frontend/admin/job_management.php',
+  'welcome/admin/applicants' => __DIR__ . '/frontend/admin/applicants.php',
+  'welcome/admin/schedule' => __DIR__ . '/frontend/admin/schedule.php',
+  'welcome/admin/users' => __DIR__ . '/frontend/admin/users.php',
+  'welcome/admin/cms' => __DIR__ . '/frontend/admin/cms.php',
+  'welcome/admin/settings' => __DIR__ . '/frontend/admin/settings.php',
+
+  // Backward-compatible aliases
+  'index.php' => __DIR__ . '/frontend/index.php',
+  'jobs.php' => __DIR__ . '/frontend/jobs.php',
+  'my_applications.php' => __DIR__ . '/frontend/my_applications.php',
+  'settings.php' => __DIR__ . '/frontend/settings.php',
+
+  // Backward-compatible admin aliases
+  'admin/dashboard.php' => __DIR__ . '/frontend/admin/dashboard.php',
+  'admin/job_management.php' => __DIR__ . '/frontend/admin/job_management.php',
+  'admin/applicants.php' => __DIR__ . '/frontend/admin/applicants.php',
+  'admin/schedule.php' => __DIR__ . '/frontend/admin/schedule.php',
+  'admin/users.php' => __DIR__ . '/frontend/admin/users.php',
+  'admin/cms.php' => __DIR__ . '/frontend/admin/cms.php',
+  'admin/settings.php' => __DIR__ . '/frontend/admin/settings.php',
+];
+
+$requestedRoute = '';
+
+if (!empty($_GET['route'])) {
+  $requestedRoute = trim((string)$_GET['route'], '/');
+} elseif (!empty($_SERVER['PATH_INFO'])) {
+  $requestedRoute = trim((string)$_SERVER['PATH_INFO'], '/');
+}
+
+if ($requestedRoute !== '' && isset($frontendRouteMap[$requestedRoute])) {
+  require $frontendRouteMap[$requestedRoute];
+  exit;
+}
+
 // Fetch content from CMS database for dynamic homepage
 try {
     require_once 'backend/config.php';
@@ -140,7 +188,7 @@ try {
     </p>
 
     <div data-aos="zoom-in" data-aos-delay="400">
-      <a href="frontend/"
+      <a href="<?php echo htmlspecialchars($publicFrontendEntryUrl); ?>"
          class="glow-btn bg-emerald-600 hover:bg-emerald-700 
                 text-white font-semibold px-10 py-4 rounded-2xl 
                 text-lg shadow-xl transition-all duration-300">
@@ -234,7 +282,7 @@ try {
   </p>
 
   <div data-aos="zoom-in" data-aos-delay="400">
-    <a href="frontend/"
+    <a href="<?php echo htmlspecialchars($publicFrontendEntryUrl); ?>"
        class="bg-white text-emerald-600 font-semibold 
               px-10 py-4 rounded-2xl text-lg shadow-xl 
               hover:bg-gray-100 transition">

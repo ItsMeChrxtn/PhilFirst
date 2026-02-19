@@ -1,0 +1,38 @@
+RewriteEngine On
+
+# Legacy URL redirects -> pretty URLs
+RewriteRule ^index\.php$ /welcome [R=302,L]
+RewriteRule ^index\.php/index\.php/?$ /welcome/home [R=302,L]
+RewriteRule ^frontend/index\.php/?$ /welcome/home [R=302,L]
+RewriteRule ^frontend/jobs\.php/?$ /welcome/jobs [R=302,L]
+RewriteRule ^frontend/my_applications\.php/?$ /welcome/my-applications [R=302,L]
+RewriteRule ^frontend/settings\.php/?$ /welcome/settings [R=302,L]
+RewriteRule ^frontend/admin/?$ /welcome/admin/dashboard [R=302,L]
+RewriteRule ^frontend/admin/index\.php/?$ /welcome/admin/dashboard [R=302,L]
+RewriteRule ^frontend/admin/dashboard\.php/?$ /welcome/admin/dashboard [R=302,L]
+RewriteRule ^frontend/admin/job_management\.php/?$ /welcome/admin/job-management [R=302,L]
+RewriteRule ^frontend/admin/applicants\.php/?$ /welcome/admin/applicants [R=302,L]
+RewriteRule ^frontend/admin/schedule\.php/?$ /welcome/admin/schedule [R=302,L]
+RewriteRule ^frontend/admin/users\.php/?$ /welcome/admin/users [R=302,L]
+RewriteRule ^frontend/admin/cms\.php/?$ /welcome/admin/cms [R=302,L]
+RewriteRule ^frontend/admin/settings\.php/?$ /welcome/admin/settings [R=302,L]
+RewriteRule ^welcome/admin/dashboard\./?$ /welcome/admin/dashboard [R=302,L]
+
+# Landing page
+RewriteRule ^welcome/?$ index.php [L,QSA]
+
+# Frontend app pretty routes
+RewriteRule ^welcome/home/?$ index.php?route=welcome/home [L,QSA]
+RewriteRule ^welcome/jobs/?$ index.php?route=welcome/jobs [L,QSA]
+RewriteRule ^welcome/my-applications/?$ index.php?route=welcome/my-applications [L,QSA]
+RewriteRule ^welcome/settings/?$ index.php?route=welcome/settings [L,QSA]
+
+# Admin pretty routes
+RewriteRule ^welcome/admin/?$ index.php?route=welcome/admin/dashboard [L,QSA]
+RewriteRule ^welcome/admin/dashboard/?$ index.php?route=welcome/admin/dashboard [L,QSA]
+RewriteRule ^welcome/admin/job-management/?$ index.php?route=welcome/admin/job-management [L,QSA]
+RewriteRule ^welcome/admin/applicants/?$ index.php?route=welcome/admin/applicants [L,QSA]
+RewriteRule ^welcome/admin/schedule/?$ index.php?route=welcome/admin/schedule [L,QSA]
+RewriteRule ^welcome/admin/users/?$ index.php?route=welcome/admin/users [L,QSA]
+RewriteRule ^welcome/admin/cms/?$ index.php?route=welcome/admin/cms [L,QSA]
+RewriteRule ^welcome/admin/settings/?$ index.php?route=welcome/admin/settings [L,QSA]

@@ -128,7 +128,7 @@
   // Fetch applicants from backend
   async function loadApplicants(){
     try{
-      const res = await fetch('../../backend/get_applications.php');
+      const res = await fetch('/backend/get_applications.php');
       const json = await res.json();
       if(!json.success) return console.error('Failed to load applicants', json.message || json);
       const data = json.data || [];
@@ -247,7 +247,7 @@
 
         try{
           const loading = Swal.fire({ title: 'Updating...', allowOutsideClick:false, didOpen: ()=>Swal.showLoading() });
-          const res = await fetch('../../backend/update_application.php', { method: 'POST', headers: { 'Content-Type':'application/json' }, body: JSON.stringify({ id: id, status: action }) });
+          const res = await fetch('/backend/update_application.php', { method: 'POST', headers: { 'Content-Type':'application/json' }, body: JSON.stringify({ id: id, status: action }) });
           const json = await res.json();
           Swal.close();
           if(json.success){

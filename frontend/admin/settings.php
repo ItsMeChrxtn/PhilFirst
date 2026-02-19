@@ -105,7 +105,7 @@ $fullName = trim($first . ' ' . $last);
     try {
       const form = document.getElementById('profileForm');
       const fd = new FormData(form);
-      const res = await fetch('../backend/update_profile.php', { method: 'POST', body: fd });
+      const res = await fetch('/backend/update_profile.php', { method: 'POST', body: fd });
       const data = await res.json();
       if(data.success){
         showMsg(msg, 'Profile updated.', false);
@@ -137,7 +137,7 @@ $fullName = trim($first . ' ' . $last);
     btn.textContent = 'Updating...';
 
     try {
-      const res = await fetch('../backend/change_password.php', {
+      const res = await fetch('/backend/change_password.php', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ currentPassword, newPassword })

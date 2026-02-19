@@ -1,5 +1,6 @@
 <?php 
 session_start(); 
+$publicJobsUrl = getenv('PHILFIRST_PUBLIC_JOBS_URL') ?: '/welcome/jobs';
 
 // Load CMS content
 require_once __DIR__ . '/../backend/config.php';
@@ -107,7 +108,7 @@ $contact_note = $cms->getPageBySlug('contact-note')['content'] ?? 'For inquiries
       </p>
 
       <div class="flex gap-4 flex-wrap pt-4">
-        <a href="jobs.php"
+        <a href="<?php echo htmlspecialchars($publicJobsUrl); ?>"
            class="px-8 py-3 rounded-full bg-emerald-600 hover:bg-emerald-700 text-white font-semibold transition shadow-lg">
           Explore Careers
         </a>
@@ -268,11 +269,11 @@ $contact_note = $cms->getPageBySlug('contact-note')['content'] ?? 'For inquiries
     }
     const logoutBtn = document.getElementById('logoutBtn');
     if(logoutBtn) logoutBtn.addEventListener('click', async ()=>{
-      try{ await fetch('../backend/logout.php',{method:'POST',credentials:'same-origin', headers: {'X-Requested-With':'XMLHttpRequest'}}); await Swal.fire({ icon:'success', title:'Logged out', text:'You have been logged out', timer:1200, showConfirmButton:false }); window.location.href='index.php'; }catch(e){ Swal.fire('Error','Logout failed','error'); }
+      try{ await fetch('../backend/logout.php',{method:'POST',credentials:'same-origin', headers: {'X-Requested-With':'XMLHttpRequest'}}); await Swal.fire({ icon:'success', title:'Logged out', text:'You have been logged out', timer:1200, showConfirmButton:false }); window.location.href='/welcome/home'; }catch(e){ Swal.fire('Error','Logout failed','error'); }
     });
     const logoutBtnM = document.getElementById('logoutBtnMobile');
     if(logoutBtnM) logoutBtnM.addEventListener('click', async ()=>{
-      try{ await fetch('../backend/logout.php',{method:'POST',credentials:'same-origin', headers: {'X-Requested-With':'XMLHttpRequest'}}); await Swal.fire({ icon:'success', title:'Logged out', text:'You have been logged out', timer:1200, showConfirmButton:false }); window.location.href='index.php'; }catch(e){ Swal.fire('Error','Logout failed','error'); }
+      try{ await fetch('../backend/logout.php',{method:'POST',credentials:'same-origin', headers: {'X-Requested-With':'XMLHttpRequest'}}); await Swal.fire({ icon:'success', title:'Logged out', text:'You have been logged out', timer:1200, showConfirmButton:false }); window.location.href='/welcome/home'; }catch(e){ Swal.fire('Error','Logout failed','error'); }
     });
 
     // login handler -> POST to backend/login.php
@@ -287,7 +288,7 @@ $contact_note = $cms->getPageBySlug('contact-note')['content'] ?? 'For inquiries
         if(j.success){
           closeLogin();
           await Swal.fire({ icon: 'success', title: 'Login successful', text: 'You are now logged in', timer: 1400, showConfirmButton: false });
-          if(j.role === 'admin'){ window.location.href = 'admin/index.php'; } else { window.location.href = 'jobs.php'; }
+          if(j.role === 'admin'){ window.location.href = '/welcome/admin/dashboard'; } else { window.location.href = '/welcome/jobs'; }
         } else {
           Swal.fire({ icon: 'error', title: 'Login failed', text: j.message || 'Invalid credentials' });
         }
@@ -306,7 +307,7 @@ $contact_note = $cms->getPageBySlug('contact-note')['content'] ?? 'For inquiries
         if(j.success){
           closeRegister();
           await Swal.fire({ icon: 'success', title: 'Account created', text: 'Your account was created successfully', timer: 1500, showConfirmButton: false });
-          window.location.href = 'jobs.php';
+          window.location.href = '/welcome/jobs';
         } else {
           Swal.fire({ icon: 'error', title: 'Registration failed', text: j.message || 'Unable to register' });
         }

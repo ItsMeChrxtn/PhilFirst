@@ -45,6 +45,7 @@ $adminAvatarUrl = $adminAvatar ?: ('https://ui-avatars.com/api/?name=' . urlenco
 
   <!-- Font Awesome -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
   <script>
     tailwind.config = {
@@ -116,7 +117,7 @@ $adminAvatarUrl = $adminAvatar ?: ('https://ui-avatars.com/api/?name=' . urlenco
           </div>
           <div class="flex flex-col">
             <a href="<?php echo htmlspecialchars($adminSettingsUrl); ?>" class="px-4 py-3 hover:bg-emerald-50 text-sm">⚙️ Settings</a>
-            <a href="/backend/logout.php" class="text-left px-4 py-3 text-sm text-red-600 hover:bg-red-50">🚪 Logout</a>
+            <a id="adminLogoutLink" href="/backend/logout.php" class="text-left px-4 py-3 text-sm text-red-600 hover:bg-red-50">🚪 Logout</a>
           </div>
         </div>
       </div>
@@ -154,6 +155,7 @@ $adminAvatarUrl = $adminAvatar ?: ('https://ui-avatars.com/api/?name=' . urlenco
         const adminMarkAllRead = document.getElementById('adminMarkAllRead');
         const userMenuBtn = document.getElementById('userMenuBtn');
         const userDropdown = document.getElementById('userDropdown');
+        const adminLogoutLink = document.getElementById('adminLogoutLink');
 
         function setBadge(el, count){
           if(!el) return;
@@ -197,6 +199,55 @@ $adminAvatarUrl = $adminAvatar ?: ('https://ui-avatars.com/api/?name=' . urlenco
               }
             }catch(e){
               // silent fail
+            }
+          });
+        }
+
+        if(adminLogoutLink){
+          adminLogoutLink.addEventListener('click', async (e) => {
+            e.preventDefault();
+
+            try{
+              if(window.Swal){
+                Swal.fire({
+                  title: 'Logging out...',
+                  text: 'Please wait',
+                  icon: 'info',
+                  allowOutsideClick: false,
+                  allowEscapeKey: false,
+                  didOpen: () => Swal.showLoading()
+                });
+              }
+
+              const res = await fetch('/backend/logout.php', {
+                method: 'POST',
+                credentials: 'same-origin',
+                headers: { 'X-Requested-With': 'XMLHttpRequest' }
+              });
+
+              if(!res.ok){
+                throw new Error('Logout failed');
+              }
+
+              if(window.Swal){
+                await Swal.fire({
+                  icon: 'success',
+                  title: 'Successfully logged out',
+                  timer: 900,
+                  timerProgressBar: true,
+                  showConfirmButton: false
+                });
+              }
+
+              window.location.href = '/welcome/home';
+            }catch(err){
+              if(window.Swal){
+                Swal.fire({
+                  icon: 'error',
+                  title: 'Logout failed',
+                  text: 'Please try again.'
+                });
+              }
             }
           });
         }

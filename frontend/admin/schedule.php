@@ -135,7 +135,7 @@ function fmtDateKey(d){ const y=d.getFullYear(); const m=('0'+(d.getMonth()+1)).
 
 async function loadApplicants(){
   try{
-    const res = await fetch('/backend/get_applications.php');
+    const res = await fetch('../../backend/get_applications.php');
     const json = await res.json();
     if(!json.success) return console.error('Failed to load applicants', json.message || json);
     const data = json.data || [];
@@ -171,7 +171,7 @@ function renderApplicants(){
 
 async function loadSchedules(){
   try{
-    const res = await fetch('/backend/schedule_api.php');
+    const res = await fetch('../../backend/schedule_api.php?t=' + Date.now());
     const json = await res.json();
     if(!json.success) return console.error('Failed to load schedules', json.message || json);
     schedules = json.data || [];
@@ -461,7 +461,7 @@ if(scheduleFormEl) scheduleFormEl.addEventListener('submit', async (ev)=>{
 
   // send request in background and reconcile
   try{
-    const res = await fetch('/backend/schedule_api.php', { method: 'POST', headers: { 'Content-Type':'application/json' }, body: JSON.stringify({ applicant_id: id, applicant_name: name, position: position, scheduled_at: dt }) });
+    const res = await fetch('../../backend/schedule_api.php', { method: 'POST', headers: { 'Content-Type':'application/json' }, body: JSON.stringify({ applicant_id: id, applicant_name: name, position: position, scheduled_at: dt }) });
     const json = await res.json();
     if(json && json.success){
       // replace tmp id with real id
@@ -510,7 +510,7 @@ async function confirmRemoveSchedule(e){
 
 // helper: delete schedule via POST with _method override (more reliable than DELETE)
 async function deleteScheduleById(schedId){
-  const res = await fetch('/backend/schedule_api.php', { 
+  const res = await fetch('../../backend/schedule_api.php', { 
     method: 'POST', 
     headers: { 'Content-Type':'application/json' }, 
     body: JSON.stringify({ _method: 'DELETE', id: schedId }) 
@@ -523,6 +523,26 @@ async function deleteScheduleById(schedId){
 loadApplicants();
 loadSchedules();
 renderCalendar(currentMonth,currentYear);
+
+// Auto-refresh schedules every 1 second to detect new interviews
+let autoRefreshSchedulesInterval = null;
+function startAutoRefreshSchedules(){
+  if(autoRefreshSchedulesInterval) clearInterval(autoRefreshSchedulesInterval);
+  autoRefreshSchedulesInterval = setInterval(async ()=>{
+    try{
+      await loadApplicants();
+      await loadSchedules();
+    }catch(e){
+      console.error('Auto-refresh schedules error', e);
+    }
+  }, 1000);
+}
+startAutoRefreshSchedules();
+
+// Stop auto-refresh when leaving page
+window.addEventListener('beforeunload', ()=>{
+  if(autoRefreshSchedulesInterval) clearInterval(autoRefreshSchedulesInterval);
+});
 
 // PDF modal handlers
 const pdfModal = document.getElementById('pdfModal');

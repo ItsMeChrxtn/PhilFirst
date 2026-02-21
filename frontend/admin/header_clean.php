@@ -191,7 +191,7 @@ $adminAvatarUrl = $adminAvatar ?: ('https://ui-avatars.com/api/?name=' . urlenco
           adminMarkAllRead.addEventListener('click', async (e) => {
             e.stopPropagation();
             try{
-              const res = await fetch('/backend/admin_mark_all_read.php', { method: 'POST' });
+              const res = await fetch('../../backend/admin_mark_all_read.php', { method: 'POST' });
               const data = await res.json();
               if(data.success){
                 await loadAdminBadges();
@@ -219,7 +219,7 @@ $adminAvatarUrl = $adminAvatar ?: ('https://ui-avatars.com/api/?name=' . urlenco
                 });
               }
 
-              const res = await fetch('/backend/logout.php', {
+              const res = await fetch('../../backend/logout.php', {
                 method: 'POST',
                 credentials: 'same-origin',
                 headers: { 'X-Requested-With': 'XMLHttpRequest' }
@@ -264,7 +264,7 @@ $adminAvatarUrl = $adminAvatar ?: ('https://ui-avatars.com/api/?name=' . urlenco
 
         async function loadAdminNotifications(){
           try{
-            const res = await fetch('/backend/admin_badges.php');
+            const res = await fetch('../../backend/admin_badges.php?t=' + Date.now());
             const data = await res.json();
             if(!data.success) {
               adminNotifContent.innerHTML = '<div class="p-4 text-sm text-red-600 text-center">Error loading alerts</div>';
@@ -317,7 +317,7 @@ $adminAvatarUrl = $adminAvatar ?: ('https://ui-avatars.com/api/?name=' . urlenco
 
         async function loadAdminBadges(){
           try{
-            const res = await fetch('/backend/admin_badges.php');
+            const res = await fetch('../../backend/admin_badges.php?t=' + Date.now());
             const data = await res.json();
             if(!data.success) return;
             setBadge(applicantsBadge, data.pending_applicants || 0);
@@ -330,7 +330,7 @@ $adminAvatarUrl = $adminAvatar ?: ('https://ui-avatars.com/api/?name=' . urlenco
         }
 
         loadAdminBadges();
-        setInterval(loadAdminBadges, 30000);
+        setInterval(loadAdminBadges, 1000);
       })();
     </script>
 

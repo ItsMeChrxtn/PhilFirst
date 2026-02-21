@@ -119,7 +119,6 @@
 <!-- SweetAlert2 -->
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <!-- Alerts helper -->
-<script src="../assets/js/alerts.js"></script>
 
 <script>
   const tbody = document.getElementById('applicantTableBody');
@@ -128,7 +127,7 @@
   // Fetch applicants from backend
   async function loadApplicants(){
     try{
-      const res = await fetch('/backend/get_applications.php');
+      const res = await fetch('../../backend/get_applications.php?t=' + Date.now());
       const json = await res.json();
       if(!json.success) return console.error('Failed to load applicants', json.message || json);
       const data = json.data || [];
@@ -317,6 +316,25 @@
 
   // initial load
   loadApplicants();
+
+  // Auto-refresh applicants table every 1 second to detect new submissions
+  let autoRefreshApplicantsInterval = null;
+  function startAutoRefreshApplicants(){
+    if(autoRefreshApplicantsInterval) clearInterval(autoRefreshApplicantsInterval);
+    autoRefreshApplicantsInterval = setInterval(async ()=>{
+      try{
+        await loadApplicants();
+      }catch(e){
+        console.error('Auto-refresh applicants error', e);
+      }
+    }, 1000);
+  }
+  startAutoRefreshApplicants();
+
+  // Stop auto-refresh when leaving page
+  window.addEventListener('beforeunload', ()=>{
+    if(autoRefreshApplicantsInterval) clearInterval(autoRefreshApplicantsInterval);
+  });
 
   // Modal close handlers
   const viewModal = document.getElementById('viewApplicantModal');

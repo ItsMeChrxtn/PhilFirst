@@ -45,13 +45,13 @@ $publicSettingsUrl = getenv('PHILFIRST_PUBLIC_SETTINGS_URL') ?: '/welcome/settin
       <?php if(!empty($_SESSION['user'])): ?>
         <div class="relative">
           <button id="userMenuBtn" class="flex items-center gap-3 px-3 py-2 rounded-xl border border-neutral-200 bg-white shadow-sm hover:shadow-lg transition">
-            <img src="<?php echo $u_avatar ?: 'assets/js/blank-avatar.png'; ?>" class="w-9 h-9 rounded-full object-cover" alt="avatar" />
+            <img src="<?php echo $u_avatar ?: 'data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22%3E%3Crect width=%22100%22 height=%22100%22 fill=%22%23e5e7eb%22/%3E%3Ccircle cx=%2250%22 cy=%2230%22 r=%2215%22 fill=%22%239ca3af%22/%3E%3Cellipse cx=%2250%22 cy=%2275%22 rx=%2225%22 ry=%2220%22 fill=%22%239ca3af%22/%3E%3C/svg%3E'; ?>" class="w-9 h-9 rounded-full object-cover" alt="avatar" />
             <span class="hidden sm:inline-block text-sm font-medium text-neutral-800"><?php echo $u_first; ?></span>
             <svg class="w-3 h-3 text-neutral-400" viewBox="0 0 20 20" fill="currentColor"><path d="M5.23 7.21a.75.75 0 011.06.02L10 10.94l3.71-3.71a.75.75 0 111.06 1.06l-4.24 4.24a.75.75 0 01-1.06 0L5.21 8.29a.75.75 0 01.02-1.08z"/></svg>
           </button>
           <div id="userDropdown" class="absolute right-0 mt-3 w-56 bg-white border rounded-2xl shadow-lg hidden z-50 overflow-hidden">
             <div class="flex items-center gap-3 px-4 py-3 bg-neutral-50 border-b">
-              <img src="<?php echo $u_avatar ?: 'assets/js/blank-avatar.png'; ?>" class="w-12 h-12 rounded-full object-cover" alt="avatar" />
+              <img src="<?php echo $u_avatar ?: 'data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22%3E%3Crect width=%22100%22 height=%22100%22 fill=%22%23e5e7eb%22/%3E%3Ccircle cx=%2250%22 cy=%2230%22 r=%2215%22 fill=%22%239ca3af%22/%3E%3Cellipse cx=%2250%22 cy=%2275%22 rx=%2225%22 ry=%2220%22 fill=%22%239ca3af%22/%3E%3C/svg%3E'; ?>" class="w-12 h-12 rounded-full object-cover" alt="avatar" />
               <div>
                 <div class="text-sm font-semibold text-neutral-900"><?php echo $u_first; ?></div>
                 <div class="text-xs text-neutral-500">Manage your account</div>

@@ -1,5 +1,25 @@
 <?php include 'header_clean.php'; ?>
 
+<style>
+  @keyframes subtle-pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.7; }
+  }
+  
+  #autoRefreshIndicator {
+    animation: subtle-pulse 0.8s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  }
+
+  #autoRefreshIndicator i {
+    animation: spin 1s linear infinite;
+  }
+  
+  @keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+  }
+</style>
+
 <!-- ================= JOB POSTINGS HEADER ================= -->
 <div class="relative overflow-hidden rounded-2xl border border-neutral-200 bg-white shadow-sm mb-8">
   <div class="absolute inset-0 bg-gradient-to-br from-emerald-50 via-white to-transparent"></div>
@@ -17,6 +37,11 @@
       </p>
     </div>
     <div class="flex gap-2">
+      <!-- Auto-Refresh Status Indicator -->
+      <div id="autoRefreshIndicator" class="inline-flex items-center gap-2 rounded-xl bg-green-50 px-4 py-2 text-sm font-medium text-green-700 border border-green-200">
+        <i class="fa-solid fa-sync-alt animate-spin"></i>
+        Auto-refreshing
+      </div>
       <button id="exportPdfReportBtn" class="inline-flex items-center gap-2 rounded-xl bg-blue-600 px-4 py-2 text-sm font-medium text-white shadow hover:bg-blue-700 transition-all">
         <i class="fa-solid fa-file-pdf"></i>
         Export PDF
@@ -258,7 +283,7 @@
   let topJobsChart = null;
 
   async function fetchAnalytics(year, pieYear, pieMonth, topYear, topMonth, barMonth){
-    const url = `/backend/analytics.php?year=${encodeURIComponent(year)}&pie_year=${encodeURIComponent(pieYear)}&pie_month=${encodeURIComponent(pieMonth)}&top_year=${encodeURIComponent(topYear)}&top_month=${encodeURIComponent(topMonth)}&bar_month=${encodeURIComponent(barMonth)}&debug=1`;
+    const url = `../../backend/analytics.php?year=${encodeURIComponent(year)}&pie_year=${encodeURIComponent(pieYear)}&pie_month=${encodeURIComponent(pieMonth)}&top_year=${encodeURIComponent(topYear)}&top_month=${encodeURIComponent(topMonth)}&bar_month=${encodeURIComponent(barMonth)}&debug=1&t=${Date.now()}`;
     const resp = await fetch(url, { credentials: 'same-origin' });
     const text = await resp.text();
     try {
@@ -522,6 +547,25 @@
   const pieCardYear = document.getElementById('pieYearSelect');
   if (pieCardYear && pieCardYear.parentNode) pieCardYear.parentNode.appendChild(pieMonthSelect);
   refresh();
+
+  // Auto-refresh every 1 second to detect new users/applications instantly
+  let autoRefreshInterval = null;
+  function startAutoRefresh(){
+    if(autoRefreshInterval) clearInterval(autoRefreshInterval);
+    autoRefreshInterval = setInterval(async ()=>{
+      try{
+        await refresh();
+      }catch(e){
+        console.error('Auto-refresh error', e);
+      }
+    }, 1000);
+  }
+  startAutoRefresh();
+
+  // Optional: stop auto-refresh if user manually navigates away, to save resources
+  window.addEventListener('beforeunload', ()=>{
+    if(autoRefreshInterval) clearInterval(autoRefreshInterval);
+  });
 })();
 </script>
 

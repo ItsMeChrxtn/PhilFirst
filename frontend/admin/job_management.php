@@ -451,11 +451,10 @@
 <!-- SweetAlert2 -->
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <!-- Alerts helper -->
-<script src="../assets/js/alerts.js"></script>
 
 <!-- ================= SCRIPT ================= -->
 <script>
-  const apiUrl = '/backend/job_api.php';
+  const apiUrl = '../../backend/job_api.php';
   let jobsData = [];
   let currentPage = 1;
   const pageSize = 15;
@@ -723,6 +722,26 @@
 
   // Initial load
   loadJobs();
+
+  // Auto-refresh jobs table every 1 second to detect new postings
+  let autoRefreshJobsInterval = null;
+  function startAutoRefreshJobs(){
+    if(autoRefreshJobsInterval) clearInterval(autoRefreshJobsInterval);
+    autoRefreshJobsInterval = setInterval(async ()=>{
+      try{
+        await loadJobs();
+      }catch(e){
+        console.error('Auto-refresh jobs error', e);
+      }
+    }, 1000);
+  }
+  startAutoRefreshJobs();
+
+  // Stop auto-refresh when leaving page
+  window.addEventListener('beforeunload', ()=>{
+    if(autoRefreshJobsInterval) clearInterval(autoRefreshJobsInterval);
+  });
+
   // Wire admin filters (status buttons + search apply/clear)
   function getSelectedStatus(){ const b = document.querySelector('.adminStatusBtn.selected'); return b ? b.dataset.status : 'all'; }
   // initialize: mark 'All' as selected

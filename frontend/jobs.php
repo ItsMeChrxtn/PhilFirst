@@ -181,19 +181,21 @@
       <input type="hidden" name="job_title" id="applyJobTitle" />
       <div>
         <label class="block text-xs font-medium text-neutral-600">Full name <span class="text-neutral-400">(Buong Pangalan)</span></label>
-        <input name="full_name" placeholder="Buong Pangalan" pattern="[a-zA-Z\s'-]+" title="Letters, spaces, hyphens, and apostrophes only" required class="w-full rounded-xl border border-neutral-300 px-3 py-2" />
+        <input name="full_name" placeholder="Buong Pangalan" pattern="[a-zA-Z\s'-]+" title="Letters, spaces, hyphens, and apostrophes only" required readonly class="w-full rounded-xl border border-neutral-300 px-3 py-2 bg-neutral-100" />
       </div>
       <div>
         <label class="block text-xs font-medium text-neutral-600">Email <span class="text-neutral-400">(Email)</span></label>
-        <input name="email" type="email" placeholder="halimbawa@domain.com" required class="w-full rounded-xl border border-neutral-300 px-3 py-2" />
+        <input name="email" type="email" placeholder="halimbawa@domain.com" required readonly class="w-full rounded-xl border border-neutral-300 px-3 py-2 bg-neutral-100" />
       </div>
       <div>
         <label class="block text-xs font-medium text-neutral-600">Phone <span class="text-neutral-400">(Telepono)</span></label>
-        <input name="phone" type="tel" placeholder="0917xxxxxxx" pattern="0\d{10}" title="11 digits starting with 0" maxlength="11" required class="w-full rounded-xl border border-neutral-300 px-3 py-2" />
+        <input name="phone" type="tel" placeholder="0917xxxxxxx" pattern="0\d{10}" title="11 digits starting with 0" maxlength="11" required readonly class="w-full rounded-xl border border-neutral-300 px-3 py-2 bg-neutral-100" />
+        <p class="text-xs text-neutral-500 mt-1">Auto-filled from your account settings.</p>
       </div>
       <div>
         <label class="block text-xs font-medium text-neutral-600">Upload resume <span class="text-neutral-400">(I-upload ang Resume)</span></label>
-        <input name="resume" type="file" class="w-full" />
+        <input name="resume" type="file" accept=".pdf,.doc,.docx" required class="w-full" />
+        <p class="text-xs text-neutral-500 mt-1">Dapat may "resume" o "biodata" sa file name (hal. juan_resume.pdf).</p>
       </div>
       <div>
         <label class="block text-xs font-medium text-neutral-600">Message <span class="text-neutral-400">(Optional)</span></label>
@@ -555,7 +557,79 @@ document.addEventListener('DOMContentLoaded', ()=>{
 </script>
 <script>
 // Apply modal helpers
-function openApplyModal(jobId){
+let applicantProfile = null;
+let applicantProfileLoaded = false;
+
+function settingsUrl(){
+  return '/welcome/settings';
+}
+
+function fillApplyIdentityFields(profile){
+  const form = document.getElementById('applyForm');
+  if(!form || !profile) return;
+  const fullNameInput = form.querySelector('input[name="full_name"]');
+  const emailInput = form.querySelector('input[name="email"]');
+  const phoneInput = form.querySelector('input[name="phone"]');
+  if(fullNameInput) fullNameInput.value = profile.full_name || '';
+  if(emailInput) emailInput.value = profile.email || '';
+  if(phoneInput) phoneInput.value = profile.phone || '';
+}
+
+async function loadApplicantProfile(forceReload = false){
+  if(!window.currentUserId) return null;
+  if(applicantProfileLoaded && !forceReload) return applicantProfile;
+  try{
+    const res = await fetch('../backend/my_profile.php', { method:'GET', credentials:'same-origin' });
+    const j = await res.json();
+    if(j.success && j.data){
+      applicantProfile = j.data;
+      applicantProfileLoaded = true;
+      fillApplyIdentityFields(applicantProfile);
+      return applicantProfile;
+    }
+  }catch(err){
+    console.error(err);
+  }
+  applicantProfile = null;
+  applicantProfileLoaded = true;
+  return null;
+}
+
+async function promptCompleteProfile(){
+  const r = await Swal.fire({
+    icon: 'warning',
+    title: 'Complete your profile first',
+    text: 'Name, email, and phone are required. Please update your details in Settings.',
+    showCancelButton: true,
+    confirmButtonText: 'Go to Settings',
+    cancelButtonText: 'Cancel'
+  });
+  if(r.isConfirmed) window.location.href = settingsUrl();
+}
+
+async function ensureProfileReady(){
+  const profile = await loadApplicantProfile(false);
+  if(!profile || !profile.is_complete){
+    await promptCompleteProfile();
+    return false;
+  }
+  fillApplyIdentityFields(profile);
+  return true;
+}
+
+async function checkExistingApplicationStatus(jobId, jobTitle){
+  try{
+    const fd = new FormData();
+    if(jobId) fd.append('job_id', jobId);
+    const res = await fetch('../backend/check_application_status.php', { method:'POST', credentials:'same-origin', body: fd });
+    return await res.json();
+  }catch(err){
+    console.error(err);
+    return null;
+  }
+}
+
+async function openApplyModal(jobId){
   const f = document.getElementById('applyForm');
   if(f){
     // accept optional jobId parameter; use window.currentJob as fallback
@@ -564,10 +638,7 @@ function openApplyModal(jobId){
     if (jobId) resolvedId = jobId;
     else if (window.currentJob) resolvedId = window.currentJob.id || window.currentJob.job_id || window.currentJob.jobId || window.currentJob.jobID || null;
     if (window.currentJob) resolvedTitle = window.currentJob.title || window.currentJob.job_title || window.currentJob.jobTitle || '';
-    // set hidden inputs
-    if (resolvedId) document.getElementById('applyJobId').value = resolvedId;
-    else document.getElementById('applyJobId').value = '';
-    document.getElementById('applyJobTitle').value = resolvedTitle;
+    
     // if user not logged in, prompt to sign in first
     if(!window.currentUserId){
       Swal.fire({
@@ -580,6 +651,34 @@ function openApplyModal(jobId){
       }).then(r=>{ if(r.isConfirmed) openLogin(); else {/* do nothing */} });
       return;
     }
+
+    // CHECK FOR EXISTING APPLICATIONS IMMEDIATELY (before opening modal)
+    const statusChk = await checkExistingApplicationStatus(resolvedId, resolvedTitle);
+    if(statusChk && statusChk.success && statusChk.can_apply === false){
+      await Swal.fire({
+        icon: 'info',
+        title: 'Already applied',
+        text: statusChk.message || 'You already applied to this job.'
+      });
+      return;
+    }
+
+    // set hidden inputs
+    if (resolvedId) document.getElementById('applyJobId').value = resolvedId;
+    else document.getElementById('applyJobId').value = '';
+    document.getElementById('applyJobTitle').value = resolvedTitle;
+
+    const ready = await ensureProfileReady();
+    if(!ready) return;
+
+    if(statusChk && statusChk.success && statusChk.can_apply === true && statusChk.already_applied){
+      await Swal.fire({
+        icon: 'info',
+        title: 'Re-application allowed',
+        text: 'Your previous application is rejected. You can apply again.'
+      });
+    }
+
     document.getElementById('applyModal').classList.remove('hidden');
   }
 }
@@ -587,12 +686,69 @@ function openApplyModal(jobId){
 document.addEventListener('DOMContentLoaded', ()=>{
   const applyForm = document.getElementById('applyForm');
   if(!applyForm) return;
+  loadApplicantProfile(false);
+  const resumeInput = applyForm.querySelector('input[name="resume"]');
+  let isResumeValidated = false;
+
+  async function validateResumeUpload(showValidToast = true){
+    const file = resumeInput?.files?.[0] || null;
+    if(!file){
+      isResumeValidated = false;
+      return false;
+    }
+
+    const checkData = new FormData();
+    checkData.append('resume', file);
+    try{
+      Swal.fire({ title:'Checking file...', text:'Validating resume/biodata content', icon:'info', allowOutsideClick: false, allowEscapeKey: false, didOpen: ()=>{ Swal.showLoading(); } });
+      const checkRes = await fetch('../backend/validate_resume.php', { method:'POST', credentials:'same-origin', body: checkData });
+      const checkJson = await checkRes.json();
+      if(checkJson.success && checkJson.valid){
+        isResumeValidated = true;
+        if(showValidToast){
+          await Swal.fire({ icon:'success', title:'Valid file', text:'Resume/Biodata content detected.', timer: 1400, timerProgressBar: true, showConfirmButton: false });
+        } else {
+          Swal.close();
+        }
+        return true;
+      }
+      isResumeValidated = false;
+      if(resumeInput) resumeInput.value = '';
+      await Swal.fire({ icon:'error', title:'Invalid file', text: checkJson.message || 'Hindi valid ang resume/biodata file.', timer: 2600, timerProgressBar: true, showConfirmButton: false });
+      return false;
+    }catch(err){
+      console.error(err);
+      isResumeValidated = false;
+      await Swal.fire({ icon:'error', title:'Validation error', text:'Hindi ma-validate ang file ngayon. Subukan ulit.', timer: 2400, timerProgressBar: true, showConfirmButton: false });
+      return false;
+    }
+  }
+
+  if(resumeInput){
+    resumeInput.addEventListener('change', async ()=>{
+      isResumeValidated = false;
+      await validateResumeUpload(true);
+    });
+  }
+
   applyForm.addEventListener('submit', async (e)=>{
     e.preventDefault();
+    const ready = await ensureProfileReady();
+    if(!ready) return;
+
     const fd = new FormData(applyForm);
     const fullName = fd.get('full_name') || '';
     const email = fd.get('email') || '';
     const phone = fd.get('phone') || '';
+    const resumeFile = applyForm.querySelector('input[name="resume"]')?.files?.[0] || null;
+
+    const jobId = fd.get('job_id') || '';
+    const jobTitle = fd.get('job_title') || '';
+    const duplicateCheck = await checkExistingApplicationStatus(jobId, jobTitle);
+    if(duplicateCheck && duplicateCheck.success && duplicateCheck.can_apply === false){
+      await Swal.fire({ icon: 'info', title: 'Already applied', text: duplicateCheck.message || 'You already applied to this job.' });
+      return;
+    }
     
     // Validate full name
     if(!validateName(fullName)) {
@@ -611,6 +767,31 @@ document.addEventListener('DOMContentLoaded', ()=>{
       Swal.fire({ icon: 'error', title: 'Invalid Phone Number', text: 'Phone number must be 11 digits and start with 0 (e.g., 09171234567)', timer: 2000, timerProgressBar: true, showConfirmButton: false });
       return;
     }
+
+    if(!resumeFile) {
+      Swal.fire({ icon: 'error', title: 'Resume Required', text: 'Mag-upload ng resume o biodata bago magsubmit.', timer: 2200, timerProgressBar: true, showConfirmButton: false });
+      return;
+    }
+
+    const allowedExt = ['pdf', 'doc', 'docx'];
+    const fileName = resumeFile.name || '';
+    const ext = fileName.includes('.') ? fileName.split('.').pop().toLowerCase() : '';
+    const hasResumeKeyword = /(resume|bio\s*data|biodata)/i.test(fileName);
+
+    if(!hasResumeKeyword) {
+      Swal.fire({ icon: 'error', title: 'Invalid File Name', text: 'File name dapat may salitang "resume" o "biodata".', timer: 2400, timerProgressBar: true, showConfirmButton: false });
+      return;
+    }
+
+    if(!allowedExt.includes(ext)) {
+      Swal.fire({ icon: 'error', title: 'Invalid File Type', text: 'Allowed file types: PDF, DOC, DOCX lamang.', timer: 2400, timerProgressBar: true, showConfirmButton: false });
+      return;
+    }
+
+    if(!isResumeValidated){
+      const ok = await validateResumeUpload(false);
+      if(!ok) return;
+    }
     
     Swal.fire({ title:'Submitting application...', text:'Please wait', icon:'info', allowOutsideClick: false, allowEscapeKey: false, didOpen: ()=>{ Swal.showLoading(); } });
     try{
@@ -619,11 +800,17 @@ document.addEventListener('DOMContentLoaded', ()=>{
       if(j.success){
         document.getElementById('applyModal').classList.add('hidden');
         applyForm.reset();
+        isResumeValidated = false;
+        fillApplyIdentityFields(applicantProfile);
         await Swal.fire({ icon: 'success', title: 'Application submitted', text: j.message || 'Thank you for applying.', timer: 1500, timerProgressBar: true, showConfirmButton: false });
       } else if (j.requires_login) {
         // prompt login
         const r = await Swal.fire({ icon: 'info', title: 'Sign in required', text: 'Please sign in to continue', showCancelButton: true, confirmButtonText: 'Sign in' });
         if(r.isConfirmed) openLogin();
+      } else if (j.requires_profile_completion) {
+        await promptCompleteProfile();
+      } else if (j.already_applied) {
+        Swal.fire({ icon: 'info', title: 'Already applied', text: j.message || 'You already applied to this job.', timer: 2400, timerProgressBar: true, showConfirmButton: false });
       } else {
         Swal.fire({ icon: 'error', title: 'Error', text: j.message || 'Unable to submit application', timer: 2000, timerProgressBar: true, showConfirmButton: false });
       }

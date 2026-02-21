@@ -125,7 +125,7 @@ document.getElementById('lastName').value = user.last_name || '';
 document.getElementById('email').value = user.email || '';
 document.getElementById('contact').value = user.contact || '';
 const avatarPreview = document.getElementById('avatarPreview');
-if(user.profile_picture){ avatarPreview.src = user.profile_picture; } else { avatarPreview.src = 'assets/js/blank-avatar.png'; }
+if(user.profile_picture){ avatarPreview.src = user.profile_picture; } else { avatarPreview.src = 'data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22%3E%3Crect width=%22100%22 height=%22100%22 fill=%22%23e5e7eb%22/%3E%3Ccircle cx=%2250%22 cy=%2230%22 r=%2215%22 fill=%22%239ca3af%22/%3E%3Cellipse cx=%2250%22 cy=%2275%22 rx=%2225%22 ry=%2220%22 fill=%22%239ca3af%22/%3E%3C/svg%3E'; }
 
 document.getElementById('avatar').addEventListener('change', (e)=>{
   const f = e.target.files && e.target.files[0];
